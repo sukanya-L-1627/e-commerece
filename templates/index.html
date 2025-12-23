@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>E-Commerce Product Risk Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+    <h1>🛒 E-Commerce Product Risk Predictor</h1>
+    <p class="subtitle">Predict product risk using customer feedback</p>
+
+    <form action="/predict" method="post">
+
+        <div class="grid">
+            <div>
+                <label>Product availability</label>
+                <select name="availability">
+                    <option>In Stock</option>
+                    <option>Out of Stock</option>
+                    <option>Limited Stock</option>
+                </select>
+
+                <label>Product brand</label>
+                <input type="text" name="brand_name" required>
+
+                <label>Category</label>
+                <input type="text" name="category" required>
+
+                <label>Sold by</label>
+                <input type="text" name="seller_name" required>
+
+                <label>Original price</label>
+                <input type="number" name="list_price" required>
+            </div>
+
+            <div>
+                <label>Current selling price</label>
+                <input type="number" name="selling_price" required>
+
+                <label>Rating Count</label>
+                <input type="number" name="rating_count" required>
+
+                <label>Overall product rating</label>
+                <input type="number" step="0.1" name="product_rating" required>
+
+                <label>Average customer rating (from reviews)</label>
+                <input type="number" step="0.1" name="avg_review_rating" required>
+
+                <label>Rating consistency</label>
+                <input type="number" step="0.1" name="rating_variance" required>
+            </div>
+
+            <div>
+                <label>Number of reviews</label>
+                <input type="number" name="review_volume" required>
+
+                <label>Negative Review Ratio</label>
+                <input type="number" step="0.01" name="negative_review_ratio" required>
+
+                <label>Overall review tone</label>
+                <input type="number" step="0.1" name="avg_sentiment" required>
+
+                <label>Avg Review Length</label>
+                <input type="number" name="avg_review_length" required>
+            </div>
+        </div>
+
+        <button type="submit">🔍 Predict Risk</button>
+    </form>
+
+
+    <!-- INFO SECTION -->
+<div class="info-container">
+
+  <input type="checkbox" id="info-toggle" hidden>
+
+  <label for="info-toggle" class="info-button">
+     INFO 
+  </label>
+
+  <div class="info-content">
+
+    <div class="info-grid">
+
+      <!-- COLUMN 1 -->
+      <div class="info-col">
+        <h4>1️⃣ Availability</h4>
+        <p><b>What it means:</b> Whether the product is currently available to buy.</p>
+        <p><b>Why it matters:</b> Unavailable products frustrate customers and reduce trust.</p>
+        <p><b>Risk relationship:</b><br>
+            🟢 In Stock → Lower risk<br>
+            🟡 Limited Stock → Medium risk<br>
+            🔴 Out of Stock → Higher risk
+        </p>
+
+        <h4>2️⃣ Brand Name</h4>
+        <p><b>What it means:</b> The brand that manufactures the product.</p>
+        <p><b>Why it matters:</b> Well-known brands usually have consistent quality.</p>
+        <p><b>Risk relationship:</b><br>
+            🟢 Trusted brand → Lower risk<br>
+            🟡 Less-known brand → Medium risk<br>
+            🔴 Poor-reputation brand → Higher risk<br>
+            <i>(The model learns this from past data)</i>
+        </p>
+
+        <h4>3️⃣ Category (Product Type)</h4>
+        <p><b>What it means:</b> The type of product (electronics, accessories, clothing, etc.).</p>
+        <p><b>Why it matters:</b> Some categories receive more complaints than others.</p>
+        <p><b>Risk relationship:</b><br>
+            🟢 Low-complaint categories → Lower risk<br>
+            🟡 Mixed-feedback categories → Medium risk<br>
+            🔴 High-complaint categories → Higher risk
+        </p>
+
+        <h4>4️⃣ Seller Name</h4>
+        <p><b>What it means:</b> Who is selling the product.</p>
+        <p><b>Why it matters:</b> Seller behavior affects delivery, returns, and support.</p>
+        <p><b>Risk relationship:</b><br>
+            🟢 Reliable seller → Lower risk<br>
+            🟡 New or mixed seller → Medium risk<br>
+            🔴 Unreliable seller → Higher risk
+        </p>
+
+        <h4>5️⃣ List Price (Original Price)</h4>
+        <p><b>What it means:</b> The original price shown to customers.</p>
+        <p><b>Why it matters:</b> Used to understand discount patterns.</p>
+        <p><b>Risk relationship:</b><br>
+            By itself → Neutral<br>
+            Used with selling price → Important
+        </p>
+
+        <h4>6️⃣ Selling Price</h4>
+        <p><b>What it means:</b> Actual price customers pay.</p>
+        <p><b>Why it matters:</b> Very heavy discounts can signal poor demand or quality issues.</p>
+        <p><b>Risk relationship:</b><br>
+            🟢 Fair pricing → Lower risk<br>
+            🟡 Moderate discount → Medium risk<br>
+            🔴 Very high discount → Higher risk
+        </p>
+
+        <h4>7️⃣ Rating Count</h4>
+        <p><b>What it means:</b> Number of users who rated the product.</p>
+        <p><b>Why it matters:</b> More ratings mean more trust.</p>
+        <p><b>Risk relationship:</b><br>
+            🟢 ≥ 150 ratings → Lower risk<br>
+            🟡 50–150 ratings → Medium risk<br>
+            🔴 &lt; 50 ratings → Higher risk
+        </p>
+      </div>
+        <!-- COLUMN 2 -->
+      <div class="info-col">
+
+        <h4>8️⃣ Product Rating (Stars)</h4>
+        <p><b>What it means:</b> Overall star rating shown on the product page.</p>
+        <p><b>Why it matters:</b> Reflects general customer satisfaction.</p>
+        <p><b>Risk relationship:</b><br>
+            🟢 ≥ 4.2 → Lower risk<br>
+            🟡 3.6–4.1 → Medium risk<br>
+            🔴 &lt; 3.5 → Higher risk
+        </p>
+
+        <h4>9️⃣ Average Review Rating</h4>
+        <p><b>What it means:</b> Average rating calculated only from written reviews.</p>
+        <p><b>Why it matters:</b> Text reviews often reveal real issues.</p>
+        <p><b>Risk relationship:</b><br>
+            🟢 ≥ 4.2 → Lower risk<br>
+            🟡 3.6–4.1 → Medium risk<br>
+            🔴 &lt; 3.5 → Higher risk
+        </p>
+
+        <h4>🔟 Rating Variance</h4>
+        <p><b>What it means:</b> How much customer ratings differ from each other.</p>
+        <p><b>Example:</b> Some give 5⭐, some give 1⭐ → High variance</p>
+        <p><b>Risk relationship:</b><br>
+            🟢 ≤ 0.6 → Lower risk<br>
+            🟡 0.7–1.5 → Medium risk<br>
+            🔴 &gt; 1.5 → Higher risk
+        </p>
+
+        <h4>1️⃣1️⃣ Review Volume</h4>
+        <p><b>What it means:</b> Total number of written reviews.</p>
+        <p><b>Why it matters:</b> More reviews mean more reliable feedback.</p>
+        <p><b>Risk relationship:</b><br>
+            🟢 ≥ 100 reviews → Lower risk<br>
+            🟡 30–100 reviews → Medium risk<br>
+            🔴 &lt; 30 reviews → Higher risk
+        </p>
+
+        <h4>1️⃣2️⃣ Negative Review Ratio</h4>
+        <p><b>What it means:</b> Percentage of reviews that are clearly negative.</p>
+        <p><b>Why it matters:</b> Shows how many customers faced problems.</p>
+        <p><b>Risk relationship:</b><br>
+            🟢 ≤ 10% → Lower risk<br>
+            🟡 10–30% → Medium risk<br>
+            🔴 ≥ 30% → Higher risk
+        </p>
+
+        <h4>1️⃣3️⃣ Average Sentiment</h4>
+        <p><b>What it means:</b> Overall tone of review text.</p>
+        <p><b>Why it matters:</b> Captures emotions not visible in star ratings.</p>
+        <p><b>Risk relationship:</b><br>
+            🟢 Positive (&gt; 0.3) → Lower risk<br>
+            🟡 Slightly positive → Medium risk<br>
+            🔴 Neutral or negative → Higher risk
+        </p>
+
+        <h4>1️⃣4️⃣ Average Review Length</h4>
+        <p><b>What it means:</b> How detailed reviews are.</p>
+        <p><b>Why it matters:</b> Very short reviews often lack trust.</p>
+        <p><b>Risk relationship:</b><br>
+            🟢 ≥ 40 words → Lower risk<br>
+            🟡 20–40 words → Medium risk<br>
+            🔴 &lt; 20 words → Higher risk
+        </p>
+
+    </div>
+</details>
+
+
+
+
+</div>
+
+</body>
+</html>

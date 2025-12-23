@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Risk Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container result-card">
+
+    <!-- Risk Title -->
+    <h1 class="risk-title {{ risk|lower }}">
+        {{ risk }} ({{ confidence }}%)
+    </h1>
+
+    <!-- Short Summary -->
+    <p class="risk-summary">
+        {% if risk == "High Risk" %}
+            This product needs immediate attention before further promotion.
+        {% elif risk == "Medium Risk" %}
+            This product shows mixed customer experience and needs monitoring.
+        {% else %}
+            This product is performing well and is safe to promote.
+        {% endif %}
+    </p>
+
+    <!-- Explanation -->
+    <h3>📌 What’s happening with this product?</h3>
+    <ul>
+        {% for item in explanation %}
+            <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Recommended Action -->
+    <h3>✅ Recommended action</h3>
+    <ul class="action-list">
+        {% for action in recommended_action %}
+            <li>{{ action }}</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Back Button -->
+    <a href="/" class="back-btn">← Check another product</a>
+
+</div>
+
+</body>
+</html>
